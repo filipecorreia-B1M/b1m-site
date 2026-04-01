@@ -23,12 +23,7 @@ header {
 }
 
 .logo {
-  font-size: 20px;
   letter-spacing: 5px;
-}
-
-nav {
-  color: #aaa;
 }
 
 /* AUTH */
@@ -38,47 +33,10 @@ nav {
   right: 20px;
 }
 
-#login-box, #user-box {
-  background: #1a1a1a;
-  padding: 15px;
-  border-radius: 10px;
-  border: 1px solid #333;
-}
-
-input {
-  display: block;
-  margin: 8px 0;
-  padding: 10px;
-  width: 200px;
-  background: #111;
-  border: 1px solid #333;
-  color: white;
-}
-
-button {
-  padding: 10px 15px;
-  margin-top: 5px;
-  background: gold;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
 /* HERO */
 .hero {
-  padding: 80px 20px;
   text-align: center;
-}
-
-.hero h1 {
-  font-size: 40px;
-  letter-spacing: 6px;
-}
-
-.hero p {
-  color: #aaa;
-  margin-top: 10px;
+  padding: 60px;
 }
 
 /* PRODUTOS */
@@ -86,7 +44,6 @@ button {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 40px;
 }
 
 .produto {
@@ -95,32 +52,39 @@ button {
   padding: 20px;
   width: 260px;
   border-radius: 12px;
-  transition: 0.3s;
-}
-
-.produto:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 40px rgba(255,255,255,0.08);
 }
 
 .produto img {
   width: 100%;
-  border-radius: 10px;
 }
 
-.produto h3 {
-  margin: 15px 0 5px;
+/* CARRINHO */
+#carrinho {
+  position: fixed;
+  right: -350px;
+  top: 0;
+  width: 350px;
+  height: 100%;
+  background: #111;
+  padding: 20px;
+  transition: 0.3s;
 }
 
-.produto p {
-  color: #aaa;
+#carrinho.active {
+  right: 0;
 }
 
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 40px;
-  color: #555;
+.item {
+  border-bottom: 1px solid #333;
+  padding: 10px 0;
+}
+
+button {
+  padding: 10px;
+  background: gold;
+  border: none;
+  cursor: pointer;
+  margin-top: 5px;
 }
 </style>
 </head>
@@ -129,15 +93,15 @@ footer {
 
 <header>
   <div class="logo">B1M</div>
-  <nav>CUSTOM WATCHES</nav>
+  <div onclick="toggleCart()" style="cursor:pointer;">🛒</div>
 </header>
 
 <!-- AUTH -->
 <div id="auth-area">
 
   <div id="login-box">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
     <button onclick="login()">Entrar</button>
     <button onclick="register()">Criar conta</button>
   </div>
@@ -149,44 +113,35 @@ footer {
 
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <h1>B1M WATCHES</h1>
-  <p>Relógios personalizados para quem quer destacar-se</p>
 </div>
 
-<!-- PRODUTOS -->
 <div class="produtos">
 
   <div class="produto">
     <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
     <h3>Phantom Black</h3>
-    <p>Minimalista. Poderoso.</p>
-    <p><strong>99€</strong></p>
-    <button onclick="comprar('Phantom Black', 99)">Comprar</button>
+    <p>99€</p>
+    <button onclick="addToCart('Phantom Black',99)">Adicionar</button>
   </div>
 
   <div class="produto">
     <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa">
     <h3>Silver Steel</h3>
-    <p>Clássico moderno.</p>
-    <p><strong>129€</strong></p>
-    <button onclick="comprar('Silver Steel', 129)">Comprar</button>
-  </div>
-
-  <div class="produto">
-    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30">
-    <h3>Gold Edition</h3>
-    <p>Luxo puro.</p>
-    <p><strong>149€</strong></p>
-    <button onclick="comprar('Gold Edition', 149)">Comprar</button>
+    <p>129€</p>
+    <button onclick="addToCart('Silver Steel',129)">Adicionar</button>
   </div>
 
 </div>
 
-<footer>
-© 2026 B1M Watches
-</footer>
+<!-- CARRINHO -->
+<div id="carrinho">
+  <h2>Carrinho</h2>
+  <div id="cart-items"></div>
+  <h3 id="total"></h3>
+  <button onclick="checkout()">Finalizar compra</button>
+</div>
 
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -196,19 +151,19 @@ footer {
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
-      authDomain: "montra-site.firebaseapp.com",
+  authDomain: "montra-site.firebaseapp.com",
   projectId: "montra-site",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "..."
+  storageBucket: "montra-site.firebasestorage.app",
+  messagingSenderId: "816599981389",
+  appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
 };
-
 
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+/* AUTH */
 function login() {
   auth.signInWithEmailAndPassword(email.value, password.value)
     .catch(e => alert(e.message));
@@ -227,12 +182,34 @@ auth.onAuthStateChanged(user => {
   loginBox.style.display = user ? "none" : "block";
   userBox.style.display = user ? "block" : "none";
   userEmail.innerText = user ? "Olá, " + user.email : "";
-
-  email.value = "";
-  password.value = "";
 });
 
-function comprar(nome, preco) {
+/* CARRINHO */
+let cart = [];
+
+function addToCart(nome, preco) {
+  cart.push({nome, preco});
+  renderCart();
+}
+
+function renderCart() {
+  let total = 0;
+  cartItems.innerHTML = "";
+
+  cart.forEach(item => {
+    total += item.preco;
+    cartItems.innerHTML += `<div class="item">${item.nome} - ${item.preco}€</div>`;
+  });
+
+  totalEl.innerText = "Total: " + total + "€";
+}
+
+function toggleCart() {
+  carrinho.classList.toggle("active");
+}
+
+/* CHECKOUT (GUARDA NO FIREBASE) */
+function checkout() {
   const user = auth.currentUser;
 
   if (!user) {
@@ -240,14 +217,22 @@ function comprar(nome, preco) {
     return;
   }
 
+  if (cart.length === 0) {
+    alert("Carrinho vazio!");
+    return;
+  }
+
   db.collection("encomendas").add({
     user: user.email,
-    produto: nome,
-    preco: preco,
+    items: cart,
+    total: cart.reduce((sum, i) => sum + i.preco, 0),
     data: new Date()
   });
 
-  alert("Compra feita!");
+  alert("Compra realizada 🔥");
+
+  cart = [];
+  renderCart();
 }
 </script>
 
