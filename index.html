@@ -1,39 +1,59 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>B1M Watches</title>
+<meta charset="UTF-8">
+<title>B1M Watches</title>
 
-  <style>
-    body {
-      font-family: Arial;
-      background: #111;
-      color: white;
-      text-align: center;
-      padding: 40px;
-    }
+<style>
+body {
+  font-family: Arial;
+  background: #111;
+  color: white;
+  text-align: center;
+  padding: 40px;
+}
 
-    h1 {
-      color: gold;
-    }
+h1 {
+  color: gold;
+}
 
-    input {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 250px;
-    }
+/* AUTH NO CANTO */
+#auth-area {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
 
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      background: gold;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
+#login-box, #user-box {
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #333;
+}
 
-   .produto {
+input {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 200px;
+}
+
+button {
+  padding: 8px 15px;
+  margin: 5px;
+  background: gold;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.produtos {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.produto {
   border: 1px solid #333;
   padding: 20px;
   margin: 20px;
@@ -49,142 +69,139 @@
 }
 
 img {
+  width: 100%;
   border-radius: 10px;
 }
-  </style>
+</style>
 </head>
 
 <body>
 
-  <h1>B1M Watches</h1>
+<h1>B1M Watches</h1>
 
-  <h2>Login / Registo</h2>
-  
+<!-- AUTH -->
+<div id="auth-area">
 
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
+  <div id="login-box">
+    <h3>Login</h3>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Entrar</button>
+    <button onclick="register()">Criar conta</button>
+  </div>
 
-  <button onclick="login()">Entrar</button>
-  <button onclick="logout()">Sair</button>
-  <button onclick="register()">Criar conta</button>
+  <div id="user-box" style="display:none;">
+    <p id="user-email"></p>
+    <button onclick="logout()">Sair</button>
+  </div>
 
-  <h2>Loja</h2>
+</div>
 
-<div style="display: flex; flex-wrap: wrap; justify-content: center;">
+<h2>Loja</h2>
+
+<div class="produtos">
 
   <div class="produto">
-    <img src="https://via.placeholder.com/200" width="200">
+    <img src="https://via.placeholder.com/200">
     <h3>B1M Classic</h3>
     <p>99€</p>
     <button onclick="comprar('B1M Classic', 99)">Comprar</button>
   </div>
 
   <div class="produto">
-    <img src="https://via.placeholder.com/200" width="200">
-    <h3>B1M Gold Edition</h3>
+    <img src="https://via.placeholder.com/200">
+    <h3>B1M Gold</h3>
     <p>149€</p>
     <button onclick="comprar('B1M Gold', 149)">Comprar</button>
   </div>
 
   <div class="produto">
-    <img src="https://via.placeholder.com/200" width="200">
-    <h3>B1M Black Pro</h3>
+    <img src="https://via.placeholder.com/200">
+    <h3>B1M Black</h3>
     <p>129€</p>
     <button onclick="comprar('B1M Black', 129)">Comprar</button>
   </div>
 
 </div>
-  <!-- Firebase (VERSÃO CORRETA) -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-  <script>
-    // CONFIG FIREBASE (usa a tua!)
-    const firebaseConfig = {
-      apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
+<!-- FIREBASE (VERSÃO CERTA) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
       authDomain: "montra-site.firebaseapp.com",
   projectId: "montra-site",
   storageBucket: "...",
   messagingSenderId: "...",
   appId: "..."
+
 };
 
-    // INICIALIZAR FIREBASE
-    firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-    // LOGIN
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("Login feito!");
-        })
-        .catch(error => {
-          alert(error.message);
-        });
-    }
-    // LOGOUT
-    function logout() {
-  auth.signOut()
-    .then(() => {
-      alert("Sessão terminada!");
-    })
-    .catch(error => {
-      alert(error.message);
-    });
+// LOGIN
+function login() {
+  auth.signInWithEmailAndPassword(email.value, password.value)
+    .catch(e => alert(e.message));
 }
-    // REGISTO
-    function register() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("Conta criada!");
-        })
-        .catch(error => {
-          alert(error.message);
-        });
-    }
+// REGISTO
+function register() {
+  auth.createUserWithEmailAndPassword(email.value, password.value)
+    .catch(e => alert(e.message));
+}
 
-    // COMPRAR
-    function comprar(nome, preco) {
-      const user = auth.currentUser;
+// LOGOUT
+function logout() {
+  auth.signOut();
+}
 
-      if (!user) {
-        alert("Tens de fazer login primeiro!");
-        return;
-      }
-
-      db.collection("encomendas").add({
-        user: user.email,
-        produto: nome,
-        preco: preco,
-        data: new Date()
-      })
-      .then(() => {
-        alert("Compra guardada!");
-      })
-      .catch(error => {
-        alert(error.message);
-      });
-    }
-
-  </script>
-  
+// ESTADO DO UTILIZADOR
 auth.onAuthStateChanged(user => {
+
+  const loginBox = document.getElementById("login-box");
+  const userBox = document.getElementById("user-box");
+  const userEmail = document.getElementById("user-email");
+
   if (user) {
-    console.log("Utilizador logado:", user.email);
+    loginBox.style.display = "none";
+    userBox.style.display = "block";
+    userEmail.innerText = "Olá, " + user.email;
   } else {
-    console.log("Sem utilizador");
+    loginBox.style.display = "block";
+    userBox.style.display = "none";
   }
+
+  // LIMPAR CAMPOS SEMPRE
+  document.getElementById("email").value = "";
+  document.getElementById("password").value = "";
 });
-  
+
+// COMPRAR
+function comprar(nome, preco) {
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Faz login primeiro!");
+    return;
+  }
+
+  db.collection("encomendas").add({
+    user: user.email,
+    produto: nome,
+    preco: preco,
+    data: new Date()
+  })
+  .then(() => alert("Compra feita!"))
+  .catch(e => alert(e.message));
+}
+</script>
+
 </body>
 </html>
