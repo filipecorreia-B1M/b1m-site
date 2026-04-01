@@ -1,116 +1,190 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>B1M Watches</title>
+<meta charset="UTF-8">
+<title>B1M Watches</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #0f0f0f;
-      color: white;
-      text-align: center;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
 
-    header {
-      padding: 20px;
-      font-size: 28px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: #0f0f0f;
+  color: white;
+}
 
-    .sub {
-      color: #aaa;
-      margin-bottom: 30px;
-    }
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 40px;
+  border-bottom: 1px solid #222;
+}
 
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+.logo {
+  letter-spacing: 4px;
+  font-weight: bold;
+}
 
-    .produto {
-      background: #1c1c1c;
-      padding: 20px;
-      margin: 15px;
-      width: 280px;
-      border-radius: 10px;
-      transition: 0.3s;
-    }
+button {
+  padding: 8px 12px;
+  background: gold;
+  border: none;
+  cursor: pointer;
+  margin-left: 5px;
+}
 
-    .produto:hover {
-      transform: scale(1.05);
-    }
+/* LOGIN */
+#auth {
+  text-align: center;
+  margin-top: 30px;
+}
 
-    img {
-      width: 100%;
-      border-radius: 10px;
-    }
+input {
+  padding: 8px;
+  margin: 5px;
+}
 
-    h2 {
-      margin: 10px 0;
-    }
+/* PRODUTOS */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 40px;
+}
 
-    button {
-      background: gold;
-      color: black;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+.produto {
+  background: #1a1a1a;
+  margin: 15px;
+  padding: 20px;
+  width: 250px;
+  border-radius: 12px;
+}
 
-    button:hover {
-      background: #e6c200;
-    }
+.produto img {
+  width: 100%;
+  border-radius: 10px;
+}
 
-    footer {
-      margin-top: 40px;
-      padding: 20px;
-      color: #777;
-      font-size: 14px;
-    }
-  </style>
+/* CARRINHO */
+#carrinho {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background: #111;
+  padding: 20px;
+  display: none;
+}
+</style>
 </head>
 
 <body>
 
-<header>B1M WATCHES</header>
-<div class="sub">Relógios Personalizados</div>
+<header>
+  <div class="logo">B1M WATCHES</div>
+  <div>
+    <button onclick="toggleCart()">🛒</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div id="auth">
+  <h2>Login / Registo</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password"><br>
+  <button onclick="registar()">Criar conta</button>
+  <button onclick="login()">Entrar</button>
+</div>
+
+<!-- LOJA -->
+<div id="loja" style="display:none">
 
 <div class="container">
 
   <div class="produto">
-    <img src="https://via.placeholder.com/300x200" alt="Relógio 1">
-    <h2>Modelo Classic</h2>
-    <p>Personalizado ao teu estilo</p>
-    <p><strong>59€</strong></p>
-    <button onclick="comprar('Modelo Classic')">Comprar</button>
+    <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
+    <h3>Phantom Black</h3>
+    <p>79€</p>
+    <button onclick="addToCart('Phantom Black')">Adicionar</button>
   </div>
 
   <div class="produto">
-    <img src="https://via.placeholder.com/300x200" alt="Relógio 2">
-    <h2>Modelo Gold</h2>
-    <p>Elegância premium</p>
-    <p><strong>79€</strong></p>
-    <button onclick="comprar('Modelo Gold')">Comprar</button>
+    <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa">
+    <h3>Silver Steel</h3>
+    <p>89€</p>
+    <button onclick="addToCart('Silver Steel')">Adicionar</button>
   </div>
 
 </div>
+</div>
 
-<footer>
-  © 2026 B1M Watches
-</footer>
+<!-- CARRINHO -->
+<div id="carrinho">
+  <h2>Carrinho</h2>
+  <div id="items"></div>
+  <button onclick="checkout()">Finalizar</button>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <script>
-function comprar(produto) {
-  const numero = "351969673701"; // mete o teu número
-  const mensagem = `Olá, quero encomendar o ${produto} da B1M Watches`;
-  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
-  window.open(url, "_blank");
+const firebaseConfig = {
+  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
+  authDomain: "montra-site.firebaseapp.com",
+  projectId: "montra-site",
+  appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// LOGIN
+function registar() {
+  auth.createUserWithEmailAndPassword(email.value, password.value)
+    .then(() => alert("Conta criada"))
+    .catch(e => alert(e.message));
+}
+
+function login() {
+  auth.signInWithEmailAndPassword(email.value, password.value)
+    .then(() => alert("Entraste"))
+    .catch(e => alert(e.message));
+}
+
+function logout() {
+  auth.signOut();
+}
+
+// MOSTRAR LOJA
+auth.onAuthStateChanged(user => {
+  document.getElementById("loja").style.display = user ? "block" : "none";
+});
+
+// CARRINHO
+let cart = [];
+
+function addToCart(produto) {
+  cart.push(produto);
+  renderCart();
+}
+
+function renderCart() {
+  document.getElementById("items").innerHTML = cart.join("<br>");
+}
+
+function toggleCart() {
+  const c = document.getElementById("carrinho");
+  c.style.display = c.style.display === "block" ? "none" : "block";
+}
+
+function checkout() {
+  alert("Compra simulada 😎");
 }
 </script>
 
