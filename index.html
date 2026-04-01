@@ -4,20 +4,34 @@
 <meta charset="UTF-8">
 <title>B1M Watches</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+
 <style>
 body {
-  font-family: Arial;
-  background: #111;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: #0f0f0f;
   color: white;
-  text-align: center;
-  padding: 40px;
 }
 
-h1 {
-  color: gold;
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 25px 40px;
+  border-bottom: 1px solid #222;
 }
 
-/* AUTH NO CANTO */
+.logo {
+  font-size: 20px;
+  letter-spacing: 5px;
+}
+
+nav {
+  color: #aaa;
+}
+
+/* AUTH */
 #auth-area {
   position: fixed;
   top: 20px;
@@ -33,57 +47,95 @@ h1 {
 
 input {
   display: block;
-  margin: 10px auto;
+  margin: 8px 0;
   padding: 10px;
   width: 200px;
+  background: #111;
+  border: 1px solid #333;
+  color: white;
 }
 
 button {
-  padding: 8px 15px;
-  margin: 5px;
+  padding: 10px 15px;
+  margin-top: 5px;
   background: gold;
   border: none;
   cursor: pointer;
   font-weight: bold;
+  letter-spacing: 1px;
 }
 
+/* HERO */
+.hero {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 40px;
+  letter-spacing: 6px;
+}
+
+.hero p {
+  color: #aaa;
+  margin-top: 10px;
+}
+
+/* PRODUTOS */
 .produtos {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  padding: 40px;
 }
 
 .produto {
-  border: 1px solid #333;
-  padding: 20px;
-  margin: 20px;
-  width: 220px;
   background: #1a1a1a;
-  border-radius: 10px;
+  margin: 20px;
+  padding: 20px;
+  width: 260px;
+  border-radius: 12px;
   transition: 0.3s;
 }
 
 .produto:hover {
-  transform: scale(1.05);
-  border-color: gold;
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(255,255,255,0.08);
 }
 
-img {
+.produto img {
   width: 100%;
   border-radius: 10px;
+}
+
+.produto h3 {
+  margin: 15px 0 5px;
+}
+
+.produto p {
+  color: #aaa;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 40px;
+  color: #555;
 }
 </style>
 </head>
 
 <body>
 
-<h1>B1M Watches</h1>
+<header>
+  <div class="logo">B1M</div>
+  <nav>CUSTOM WATCHES</nav>
+</header>
 
 <!-- AUTH -->
 <div id="auth-area">
 
   <div id="login-box">
-    <h3>Login</h3>
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Entrar</button>
@@ -97,34 +149,46 @@ img {
 
 </div>
 
-<h2>Loja</h2>
+<!-- HERO -->
+<div class="hero">
+  <h1>B1M WATCHES</h1>
+  <p>Relógios personalizados para quem quer destacar-se</p>
+</div>
 
+<!-- PRODUTOS -->
 <div class="produtos">
 
   <div class="produto">
-    <img src="https://via.placeholder.com/200">
-    <h3>B1M Classic</h3>
-    <p>99€</p>
-    <button onclick="comprar('B1M Classic', 99)">Comprar</button>
+    <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
+    <h3>Phantom Black</h3>
+    <p>Minimalista. Poderoso.</p>
+    <p><strong>99€</strong></p>
+    <button onclick="comprar('Phantom Black', 99)">Comprar</button>
   </div>
 
   <div class="produto">
-    <img src="https://via.placeholder.com/200">
-    <h3>B1M Gold</h3>
-    <p>149€</p>
-    <button onclick="comprar('B1M Gold', 149)">Comprar</button>
+    <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa">
+    <h3>Silver Steel</h3>
+    <p>Clássico moderno.</p>
+    <p><strong>129€</strong></p>
+    <button onclick="comprar('Silver Steel', 129)">Comprar</button>
   </div>
 
   <div class="produto">
-    <img src="https://via.placeholder.com/200">
-    <h3>B1M Black</h3>
-    <p>129€</p>
-    <button onclick="comprar('B1M Black', 129)">Comprar</button>
+    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30">
+    <h3>Gold Edition</h3>
+    <p>Luxo puro.</p>
+    <p><strong>149€</strong></p>
+    <button onclick="comprar('Gold Edition', 149)">Comprar</button>
   </div>
 
 </div>
 
-<!-- FIREBASE (VERSÃO CERTA) -->
+<footer>
+© 2026 B1M Watches
+</footer>
+
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -137,53 +201,37 @@ const firebaseConfig = {
   storageBucket: "...",
   messagingSenderId: "...",
   appId: "..."
-
 };
+
 
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// LOGIN
 function login() {
   auth.signInWithEmailAndPassword(email.value, password.value)
     .catch(e => alert(e.message));
 }
 
-// REGISTO
 function register() {
   auth.createUserWithEmailAndPassword(email.value, password.value)
     .catch(e => alert(e.message));
 }
 
-// LOGOUT
 function logout() {
   auth.signOut();
 }
 
-// ESTADO DO UTILIZADOR
 auth.onAuthStateChanged(user => {
+  loginBox.style.display = user ? "none" : "block";
+  userBox.style.display = user ? "block" : "none";
+  userEmail.innerText = user ? "Olá, " + user.email : "";
 
-  const loginBox = document.getElementById("login-box");
-  const userBox = document.getElementById("user-box");
-  const userEmail = document.getElementById("user-email");
-
-  if (user) {
-    loginBox.style.display = "none";
-    userBox.style.display = "block";
-    userEmail.innerText = "Olá, " + user.email;
-  } else {
-    loginBox.style.display = "block";
-    userBox.style.display = "none";
-  }
-
-  // LIMPAR CAMPOS SEMPRE
-  document.getElementById("email").value = "";
-  document.getElementById("password").value = "";
+  email.value = "";
+  password.value = "";
 });
 
-// COMPRAR
 function comprar(nome, preco) {
   const user = auth.currentUser;
 
@@ -197,9 +245,9 @@ function comprar(nome, preco) {
     produto: nome,
     preco: preco,
     data: new Date()
-  })
-  .then(() => alert("Compra feita!"))
-  .catch(e => alert(e.message));
+  });
+
+  alert("Compra feita!");
 }
 </script>
 
