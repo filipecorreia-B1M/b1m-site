@@ -2,61 +2,113 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Minha Loja</title>
+  <title>B1M Watches</title>
+
   <style>
     body {
+      margin: 0;
       font-family: Arial;
-      background: #f5f5f5;
+      background: #0f0f0f;
+      color: white;
       text-align: center;
     }
 
-    h1 {
-      margin-top: 20px;
+    header {
+      padding: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .sub {
+      color: #aaa;
+      margin-bottom: 30px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .produto {
-      background: white;
+      background: #1c1c1c;
       padding: 20px;
-      margin: 20px auto;
-      width: 300px;
+      margin: 15px;
+      width: 280px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .produto:hover {
+      transform: scale(1.05);
+    }
+
+    img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    h2 {
+      margin: 10px 0;
     }
 
     button {
-      background: #25D366;
-      color: white;
+      background: gold;
+      color: black;
       border: none;
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
+      font-weight: bold;
     }
 
     button:hover {
-      background: #1ebe5d;
+      background: #e6c200;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 20px;
+      color: #777;
+      font-size: 14px;
     }
   </style>
 </head>
+
 <body>
 
-<h1>🛒 Minha Loja</h1>
+<header>B1M WATCHES</header>
+<div class="sub">Relógios Personalizados</div>
 
-<div class="produto">
-  <h2>Produto 1</h2>
-  <p>Preço: 20€</p>
-  <button onclick="comprar('Produto 1')">Comprar</button>
+<div class="container">
+
+  <div class="produto">
+    <img src="https://via.placeholder.com/300x200" alt="Relógio 1">
+    <h2>Modelo Classic</h2>
+    <p>Personalizado ao teu estilo</p>
+    <p><strong>59€</strong></p>
+    <button onclick="comprar('Modelo Classic')">Comprar</button>
+  </div>
+
+  <div class="produto">
+    <img src="https://via.placeholder.com/300x200" alt="Relógio 2">
+    <h2>Modelo Gold</h2>
+    <p>Elegância premium</p>
+    <p><strong>79€</strong></p>
+    <button onclick="comprar('Modelo Gold')">Comprar</button>
+  </div>
+
 </div>
 
-<div class="produto">
-  <h2>Produto 2</h2>
-  <p>Preço: 35€</p>
-  <button onclick="comprar('Produto 2')">Comprar</button>
-</div>
+<footer>
+  © 2026 B1M Watches
+</footer>
 
 <script>
 function comprar(produto) {
   const numero = "351969673701"; // mete o teu número
-  const mensagem = `Olá, quero comprar ${produto}`;
+  const mensagem = `Olá, quero encomendar o ${produto} da B1M Watches`;
   const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
   window.open(url, "_blank");
 }
