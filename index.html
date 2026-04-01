@@ -1,192 +1,136 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<title>B1M Watches</title>
+  <meta charset="UTF-8">
+  <title>B1M Watches</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    h1 {
+      color: gold;
+    }
 
-<style>
-body {
-  margin: 0;
-  font-family: 'Montserrat', sans-serif;
-  background: #0f0f0f;
-  color: white;
-}
+    input {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 250px;
+    }
 
-/* HEADER */
-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 40px;
-  border-bottom: 1px solid #222;
-}
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: gold;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-.logo {
-  letter-spacing: 4px;
-  font-weight: bold;
-}
-
-button {
-  padding: 8px 12px;
-  background: gold;
-  border: none;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-/* LOGIN */
-#auth {
-  text-align: center;
-  margin-top: 30px;
-}
-
-input {
-  padding: 8px;
-  margin: 5px;
-}
-
-/* PRODUTOS */
-.container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 40px;
-}
-
-.produto {
-  background: #1a1a1a;
-  margin: 15px;
-  padding: 20px;
-  width: 250px;
-  border-radius: 12px;
-}
-
-.produto img {
-  width: 100%;
-  border-radius: 10px;
-}
-
-/* CARRINHO */
-#carrinho {
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 300px;
-  height: 100%;
-  background: #111;
-  padding: 20px;
-  display: none;
-}
-</style>
+    .produto {
+      border: 1px solid #444;
+      padding: 20px;
+      margin: 20px;
+    }
+  </style>
 </head>
-
 <body>
 
-<header>
-  <div class="logo">B1M WATCHES</div>
-  <div>
-    <button onclick="toggleCart()">🛒</button>
-    <button onclick="logout()">Logout</button>
-  </div>
-</header>
+  <h1>B1M Watches</h1>
 
-<!-- LOGIN -->
-<div id="auth">
   <h2>Login / Registo</h2>
+
   <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password"><br>
-  <button onclick="registar()">Criar conta</button>
+  <input type="password" id="password" placeholder="Password">
+
   <button onclick="login()">Entrar</button>
-</div>
+  <button onclick="register()">Criar conta</button>
 
-<!-- LOJA -->
-<div id="loja" style="display:none">
-
-<div class="container">
+  <h2>Loja</h2>
 
   <div class="produto">
-    <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
-    <h3>Phantom Black</h3>
-    <p>79€</p>
-    <button onclick="addToCart('Phantom Black')">Adicionar</button>
+    <h3>Relógio B1M Classic</h3>
+    <p>Preço: 99€</p>
+    <button onclick="comprar('B1M Classic', 99)">Comprar</button>
   </div>
 
-  <div class="produto">
-    <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa">
-    <h3>Silver Steel</h3>
-    <p>89€</p>
-    <button onclick="addToCart('Silver Steel')">Adicionar</button>
-  </div>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
-</div>
-</div>
+  <script>
+    // 🔥 METE AQUI OS TEUS DADOS DO FIREBASE
+    const firebaseConfig = {
+      apiKey: "COLOCA_AQUI",
+      authDomain: "COLOCA_AQUI",
+      projectId: "montra-site",
+      storageBucket: "COLOCA_AQUI",
+      messagingSenderId: "COLOCA_AQUI",
+      appId: "COLOCA_AQUI"
+    };
 
-<!-- CARRINHO -->
-<div id="carrinho">
-  <h2>Carrinho</h2>
-  <div id="items"></div>
-  <button onclick="checkout()">Finalizar</button>
-</div>
+    firebase.initializeApp(firebaseConfig);
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
-  authDomain: "montra-site.firebaseapp.com",
-  projectId: "montra-site",
-  appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
-};
+    // LOGIN
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("Login feito!");
+        })
+        .catch(error => {
+          alert(error.message);
+        });
+    }
 
-// LOGIN
-function registar() {
-  auth.createUserWithEmailAndPassword(email.value, password.value)
-    .then(() => alert("Conta criada"))
-    .catch(e => alert(e.message));
-}
+    // REGISTO
+    function register() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-function login() {
-  auth.signInWithEmailAndPassword(email.value, password.value)
-    .then(() => alert("Entraste"))
-    .catch(e => alert(e.message));
-}
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("Conta criada!");
+        })
+        .catch(error => {
+          alert(error.message);
+        });
+    }
 
-function logout() {
-  auth.signOut();
-}
+    // COMPRAR (guarda no Firestore)
+    function comprar(nome, preco) {
+      const user = auth.currentUser;
 
-// MOSTRAR LOJA
-auth.onAuthStateChanged(user => {
-  document.getElementById("loja").style.display = user ? "block" : "none";
-});
+      if (!user) {
+        alert("Tens de fazer login primeiro!");
+        return;
+      }
 
-// CARRINHO
-let cart = [];
-
-function addToCart(produto) {
-  cart.push(produto);
-  renderCart();
-}
-
-function renderCart() {
-  document.getElementById("items").innerHTML = cart.join("<br>");
-}
-
-function toggleCart() {
-  const c = document.getElementById("carrinho");
-  c.style.display = c.style.display === "block" ? "none" : "block";
-}
-
-function checkout() {
-  alert("Compra simulada 😎");
-}
-</script>
+      db.collection("encomendas").add({
+        user: user.email,
+        produto: nome,
+        preco: preco,
+        data: new Date()
+      })
+      .then(() => {
+        alert("Compra guardada!");
+      })
+      .catch(error => {
+        alert(error.message);
+      });
+    }
+  </script>
 
 </body>
 </html>
