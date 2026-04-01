@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <title>B1M Watches</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
-
 <style>
 body {
   margin: 0;
-  font-family: 'Montserrat', sans-serif;
-  background: #0f0f0f;
+  font-family: Arial;
+  background: #0a0a0a;
   color: white;
 }
 
@@ -18,73 +16,106 @@ body {
 header {
   display: flex;
   justify-content: space-between;
-  padding: 25px 40px;
+  align-items: center;
+  padding: 20px 40px;
   border-bottom: 1px solid #222;
 }
 
 .logo {
-  letter-spacing: 5px;
+  font-weight: bold;
+  letter-spacing: 2px;
 }
 
-/* AUTH */
-#auth-area {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+.auth {
+  display: flex;
+  gap: 10px;
 }
 
-/* HERO */
-.hero {
+.auth input {
+  padding: 8px;
+  width: 140px;
+}
+
+.auth button {
+  background: gold;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
   text-align: center;
-  padding: 60px;
+}
+
+h1 {
+  margin-bottom: 40px;
 }
 
 /* PRODUTOS */
 .produtos {
   display: flex;
   justify-content: center;
+  gap: 40px;
   flex-wrap: wrap;
 }
 
 .produto {
-  background: #1a1a1a;
-  margin: 20px;
+  background: #111;
   padding: 20px;
-  width: 260px;
-  border-radius: 12px;
+  width: 280px;
+  border-radius: 10px;
+  text-align: left;
+  transition: 0.3s;
+}
+
+.produto:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 30px rgba(255,215,0,0.2);
 }
 
 .produto img {
   width: 100%;
+  border-radius: 8px;
+}
+
+.produto button {
+  background: gold;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* USER INFO */
+#userBox {
+  display: none;
 }
 
 /* CARRINHO */
-#carrinho {
+#cart {
   position: fixed;
-  right: -350px;
-  top: 0;
-  width: 350px;
-  height: 100%;
+  right: 20px;
+  top: 80px;
   background: #111;
   padding: 20px;
-  transition: 0.3s;
+  width: 250px;
+  display: none;
+  border: 1px solid #333;
+  border-radius: 10px;
 }
 
-#carrinho.active {
-  right: 0;
-}
-
-.item {
-  border-bottom: 1px solid #333;
-  padding: 10px 0;
-}
-
-button {
-  padding: 10px;
+#cart button {
+  width: 100%;
+  margin-top: 10px;
   background: gold;
   border: none;
+  padding: 10px;
   cursor: pointer;
-  margin-top: 5px;
 }
 </style>
 </head>
@@ -93,62 +124,57 @@ button {
 
 <header>
   <div class="logo">B1M</div>
-  <div onclick="toggleCart()" style="cursor:pointer;">🛒</div>
-</header>
 
-<!-- AUTH -->
-<div id="auth-area">
-
-  <div id="login-box">
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
+  <div class="auth" id="loginBox">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Entrar</button>
-    <button onclick="register()">Criar conta</button>
+    <button onclick="register()">Criar</button>
   </div>
 
-  <div id="user-box" style="display:none;">
-    <p id="user-email"></p>
+  <div id="userBox">
+    <span id="userEmail"></span>
     <button onclick="logout()">Sair</button>
   </div>
 
-</div>
+  <div onclick="toggleCart()" style="cursor:pointer;">🛒</div>
+</header>
 
-<div class="hero">
+<div class="container">
   <h1>B1M WATCHES</h1>
+
+  <div class="produtos">
+
+    <div class="produto">
+      <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
+      <h3>Phantom Black</h3>
+      <p>99€</p>
+      <button onclick="addToCart('Phantom Black', 99)">Adicionar</button>
+    </div>
+
+    <div class="produto">
+      <img src="https://images.unsplash.com/photo-1518544801976-3e1886f6b7fa">
+      <h3>Silver Steel</h3>
+      <p>129€</p>
+      <button onclick="addToCart('Silver Steel', 129)">Adicionar</button>
+    </div>
+
+  </div>
 </div>
 
-<div class="produtos">
-
-  <div class="produto">
-    <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
-    <h3>Phantom Black</h3>
-    <p>99€</p>
-    <button onclick="addToCart('Phantom Black',99)">Adicionar</button>
-  </div>
-
-  <div class="produto">
-    <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa">
-    <h3>Silver Steel</h3>
-    <p>129€</p>
-    <button onclick="addToCart('Silver Steel',129)">Adicionar</button>
-  </div>
-
-</div>
-
-<!-- CARRINHO -->
-<div id="carrinho">
-  <h2>Carrinho</h2>
-  <div id="cart-items"></div>
-  <h3 id="total"></h3>
-  <button onclick="checkout()">Finalizar compra</button>
+<div id="cart">
+  <h3>Carrinho</h3>
+  <ul id="cartItems"></ul>
+  <p>Total: <span id="total">0€</span></p>
+  <button onclick="checkout()">Finalizar</button>
 </div>
 
 <!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<script>
 const firebaseConfig = {
   apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
   authDomain: "montra-site.firebaseapp.com",
@@ -158,82 +184,88 @@ const firebaseConfig = {
   appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const loginBox = document.getElementById("loginBox");
+const userBox = document.getElementById("userBox");
+const userEmail = document.getElementById("userEmail");
 
-/* AUTH */
-function login() {
-  auth.signInWithEmailAndPassword(email.value, password.value)
+window.login = function() {
+  signInWithEmailAndPassword(auth, email.value, password.value)
     .catch(e => alert(e.message));
-}
+};
 
-function register() {
-  auth.createUserWithEmailAndPassword(email.value, password.value)
+window.register = function() {
+  createUserWithEmailAndPassword(auth, email.value, password.value)
     .catch(e => alert(e.message));
-}
+};
 
-function logout() {
-  auth.signOut();
-}
+window.logout = function() {
+  signOut(auth);
+};
 
-auth.onAuthStateChanged(user => {
-  loginBox.style.display = user ? "none" : "block";
+onAuthStateChanged(auth, user => {
+  loginBox.style.display = user ? "none" : "flex";
   userBox.style.display = user ? "block" : "none";
-  userEmail.innerText = user ? "Olá, " + user.email : "";
+  userEmail.innerText = user ? user.email : "";
+
+  email.value = "";
+  password.value = "";
 });
 
 /* CARRINHO */
 let cart = [];
 
-function addToCart(nome, preco) {
+window.addToCart = function(nome, preco) {
   cart.push({nome, preco});
   renderCart();
-}
+};
 
 function renderCart() {
-  let total = 0;
-  cartItems.innerHTML = "";
+  const list = document.getElementById("cartItems");
+  const total = document.getElementById("total");
+
+  list.innerHTML = "";
+  let sum = 0;
 
   cart.forEach(item => {
-    total += item.preco;
-    cartItems.innerHTML += `<div class="item">${item.nome} - ${item.preco}€</div>`;
+    const li = document.createElement("li");
+    li.textContent = item.nome + " - " + item.preco + "€";
+    list.appendChild(li);
+    sum += item.preco;
   });
 
-  totalEl.innerText = "Total: " + total + "€";
+  total.innerText = sum + "€";
 }
 
-function toggleCart() {
-  carrinho.classList.toggle("active");
-}
+window.toggleCart = function() {
+  const cartDiv = document.getElementById("cart");
+  cartDiv.style.display = cartDiv.style.display === "block" ? "none" : "block";
+};
 
-/* CHECKOUT (GUARDA NO FIREBASE) */
-function checkout() {
+window.checkout = async function() {
   const user = auth.currentUser;
 
   if (!user) {
-    alert("Faz login primeiro!");
+    alert("Faz login primeiro");
     return;
   }
 
-  if (cart.length === 0) {
-    alert("Carrinho vazio!");
-    return;
-  }
-
-  db.collection("encomendas").add({
+  await addDoc(collection(db, "encomendas"), {
     user: user.email,
-    items: cart,
-    total: cart.reduce((sum, i) => sum + i.preco, 0),
+    cart: cart,
+    total: cart.reduce((a,b)=>a+b.preco,0),
     data: new Date()
   });
 
-  alert("Compra realizada 🔥");
-
+  alert("Encomenda feita 🔥");
   cart = [];
   renderCart();
-}
+};
 </script>
 
 </body>
