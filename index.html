@@ -61,24 +61,24 @@
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
-  <script>
-    // 🔥 METE AQUI OS TEUS DADOS DO FIREBASE
-    const firebaseConfig = {
-      apiKey: "COLOCA_AQUI",
-      authDomain: "COLOCA_AQUI",
-      projectId: "montra-site",
-      storageBucket: "COLOCA_AQUI",
-      messagingSenderId: "COLOCA_AQUI",
-      appId: "COLOCA_AQUI"
-    };
+<script>
+  const firebaseConfig = {
+    apiKey: "AQUI_METES_O_TEU_APIKEY",
+    authDomain: "montra-site.firebaseapp.com",
+    projectId: "montra-site",
+    storageBucket: "montra-site.firebasestorage.app",
+    messagingSenderId: "816599981389",
+    appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
+  };
 
-    firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
 
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
 
     // LOGIN
     function login() {
