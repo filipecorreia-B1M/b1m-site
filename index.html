@@ -1,194 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<title>B1M Custom Watches</title>
+  <meta charset="UTF-8">
+  <title>Minha Loja</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      text-align: center;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    h1 {
+      margin-top: 20px;
+    }
 
-<style>
-body {
-  background-color: #0f0f0f;
-  color: white;
-  font-family: 'Montserrat', sans-serif;
-  text-align: center;
-  padding: 40px;
-  letter-spacing: 1px;
-}
+    .produto {
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 
-h1 {
-  letter-spacing: 5px;
-  font-size: 40px;
-  margin-bottom: 5px;
-}
+    button {
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-h2 {
-  margin-top: 30px;
-  color: #ccc;
-}
-
-input {
-  padding: 10px;
-  margin: 5px;
-  border: none;
-  border-radius: 5px;
-  width: 200px;
-}
-
-button {
-  padding: 12px 28px;
-  margin: 10px;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 4px;
-  background: transparent;
-  color: white;
-  cursor: pointer;
-  font-weight: 500;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
-}
-
-button:active {
-  transform: scale(0.97);
-}
-
-button:hover {
-  border: 1px solid white;
-  background: rgba(255,255,255,0.05);
-  transform: translateY(-2px);
-}
-
-#privado {
-  margin-top: 40px;
-  padding: 20px;
-  border-top: 1px solid #333;
-}
-
-/* PRODUTOS */
-.produtos {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  flex-wrap: wrap;
-  margin-top: 50px;
-}
-
-.produto {
-  background: linear-gradient(145deg, #1a1a1a, #111);
-  padding: 20px;
-  border-radius: 12px;
-  width: 220px;
-  transition: all 0.3s ease;
-}
-
-.produto img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.produto h3 {
-  margin: 12px 0 5px;
-}
-
-.produto p {
-  color: #aaa;
-}
-
-.produto:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 15px 40px rgba(255,255,255,0.08);
-}
-</style>
+    button:hover {
+      background: #1ebe5d;
+    }
+  </style>
 </head>
-
 <body>
 
-<h1>B1M</h1>
-<p style="color:#888; font-size:14px;"> Custom WATCHES</p>
-
-<h2>Registo</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<br>
-<button onclick="registar()">Criar conta</button>
-
-<h2>Login</h2>
-<button onclick="login()">Entrar</button>
-<button onclick="logout()">Sair</button>
-
-<div id="privado" style="display:none;">
-
-<h2>Área Privada 🔒</h2>
-<p>Bem-vindo à tua montra exclusiva.</p>
-
-<div class="produtos">
+<h1>🛒 Minha Loja</h1>
 
 <div class="produto">
-<img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
-<h3>Chrono Black</h3>
-<p>€199</p>
+  <h2>Produto 1</h2>
+  <p>Preço: 20€</p>
+  <button onclick="comprar('Produto 1')">Comprar</button>
 </div>
 
 <div class="produto">
-<img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa">
-<h3>Silver Classic</h3>
-<p>€249</p>
+  <h2>Produto 2</h2>
+  <p>Preço: 35€</p>
+  <button onclick="comprar('Produto 2')">Comprar</button>
 </div>
-
-<div class="produto">
-<img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30">
-<h3>Gold Edition</h3>
-<p>€299</p>
-</div>
-
-</div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
-  authDomain: "montra-site.firebaseapp.com",
-  projectId: "montra-site",
-  appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-function registar() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(() => alert("Conta criada!"))
-    .catch(e => alert(e.message));
+function comprar(produto) {
+  const numero = "351969673701"; // mete o teu número
+  const mensagem = `Olá, quero comprar ${produto}`;
+  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, "_blank");
 }
-
-function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => alert("Bem-vindo!"))
-    .catch(e => alert(e.message));
-}
-
-function logout() {
-  auth.signOut();
-}
-
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById("privado").style.display = "block";
-  } else {
-    document.getElementById("privado").style.display = "none";
-  }
-});
 </script>
 
 </body>
