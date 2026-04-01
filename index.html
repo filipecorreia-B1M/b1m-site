@@ -59,11 +59,13 @@ img {
   <h1>B1M Watches</h1>
 
   <h2>Login / Registo</h2>
+  
 
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
 
   <button onclick="login()">Entrar</button>
+  <button onclick="logout()">Sair</button>
   <button onclick="register()">Criar conta</button>
 
   <h2>Loja</h2>
@@ -127,7 +129,16 @@ img {
           alert(error.message);
         });
     }
-
+    // LOGOUT
+    function logout() {
+  auth.signOut()
+    .then(() => {
+      alert("Sessão terminada!");
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+}
     // REGISTO
     function register() {
       const email = document.getElementById("email").value;
@@ -164,6 +175,14 @@ img {
         alert(error.message);
       });
     }
+
+    auth.onAuthStateChanged(user => {
+  if (user) {
+    console.log("Utilizador logado:", user.email);
+  } else {
+    console.log("Sem utilizador");
+  }
+});
   </script>
 
 </body>
