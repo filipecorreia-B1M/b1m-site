@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>B1M Watches</title>
+
   <style>
     body {
       font-family: Arial;
@@ -39,6 +40,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <h1>B1M Watches</h1>
@@ -61,54 +63,42 @@
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AQUI_METES_O_TEU_APIKEY",
-    authDomain: "montra-site.firebaseapp.com",
-    projectId: "montra-site",
-    storageBucket: "montra-site.firebasestorage.app",
-    messagingSenderId: "816599981389",
-    appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
-  };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
+      authDomain: "montra-site.firebaseapp.com",
+      projectId: "montra-site",
+      storageBucket: "montra-site.firebasestorage.app",
+      messagingSenderId: "816599981389",
+      appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
+    };
 
-  firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
 
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-</script>
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    // LOGIN
     function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
       auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("Login feito!");
-        })
-        .catch(error => {
-          alert(error.message);
-        });
+        .then(() => alert("Login feito!"))
+        .catch(error => alert(error.message));
     }
 
-    // REGISTO
     function register() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
       auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          alert("Conta criada!");
-        })
-        .catch(error => {
-          alert(error.message);
-        });
+        .then(() => alert("Conta criada!"))
+        .catch(error => alert(error.message));
     }
 
-    // COMPRAR (guarda no Firestore)
     function comprar(nome, preco) {
       const user = auth.currentUser;
 
@@ -123,14 +113,13 @@
         preco: preco,
         data: new Date()
       })
-      .then(() => {
-        alert("Compra guardada!");
-      })
-      .catch(error => {
-        alert(error.message);
-      });
+      .then(() => alert("Compra guardada!"))
+      .catch(error => alert(error.message));
     }
   </script>
+
+</body>
+</html>
 
 </body>
 </html>
