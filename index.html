@@ -41,7 +41,9 @@ button {
 </head>
 <body>
 
-<div class="nav">B1M</div>
+<div class="logo" onclick="goLogin()" style="cursor:pointer;">
+  B1M
+</div>
 
 <div class="grid" id="grid"></div>
 
@@ -79,6 +81,10 @@ function abrir(id) {
   window.location.href = "peca.html?id=" + id;
 }
 
+function goLogin() {
+  window.location.href = "login.html";
+}
+  
 </script>
 
 </body>
