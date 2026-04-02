@@ -2,80 +2,70 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
-<title>Admin</title>
+<title>CMS B1M</title>
 
 <style>
 body {
-  background: #0a0a0a;
+  background: #000;
   color: white;
   font-family: Arial;
   padding: 40px;
 }
 
-.card {
-  background: #1a1a1a;
-  padding: 20px;
-  margin: 20px 0;
-  border-radius: 10px;
+input, textarea {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+button {
+  background: white;
+  color: black;
+  padding: 10px;
+  border: none;
 }
 </style>
 
 </head>
 <body>
 
-<h1>📦 Encomendas</h1>
-<div id="lista"></div>
+<h1>Criar Nova Peça</h1>
+
+<input id="nome" placeholder="Nome">
+<input id="imagem" placeholder="URL da imagem">
+<textarea id="resumo" placeholder="Resumo"></textarea>
+<textarea id="historia" placeholder="História completa"></textarea>
+
+<button onclick="criar()">Criar peça</button>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
+  apiKey: "AQUI_API_KEY",
   authDomain: "montra-site.firebaseapp.com",
-  projectId: "montra-site",
-  storageBucket: "montra-site.firebasestorage.app",
-  messagingSenderId: "816599981389",
-  appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
+  projectId: "montra-site"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getFirestore();
 
-async function load() {
-  const lista = document.getElementById("lista");
+window.criar = async () => {
 
-  const snap = await getDocs(collection(db, "encomendas"));
-
-  snap.forEach(docSnap => {
-    const d = docSnap.data();
-
-    lista.innerHTML += `
-      <div class="card">
-        <p><b>Cliente:</b> ${d.user}</p>
-        <p><b>Total:</b> ${d.total}€</p>
-        <p><b>Estado:</b> ${d.estado}</p>
-
-        <ul>
-          ${(d.produtos || []).map(p => `<li>${p.nome} - ${p.preco}€</li>`).join("")}
-        </ul>
-
-        <button onclick="enviado('${docSnap.id}')">Marcar Enviado</button>
-      </div>
-    `;
-  });
-}
-
-window.enviado = async (id) => {
-  await updateDoc(doc(db, "encomendas", id), {
-    estado: "enviado"
+  await addDoc(collection(db, "pecas"), {
+    nome: nome.value,
+    imagem: imagem.value,
+    resumo: resumo.value,
+    historia: historia.value,
+    data: new Date()
   });
 
-  location.reload();
+  alert("Peça criada!");
+
 };
-
-load();
 
 </script>
 
