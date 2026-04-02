@@ -6,14 +6,17 @@
 
 <style>
 body {
-  background: #000;
+  background: black;
   color: white;
   font-family: Arial;
   padding: 40px;
 }
 
+.hidden {
+  display: none;
+}
+
 input, textarea {
-  display: block;
   width: 100%;
   margin: 10px 0;
   padding: 10px;
@@ -30,29 +33,79 @@ button {
 </head>
 <body>
 
-<h1>Criar Nova Peça</h1>
+<!-- LOGIN -->
+<div id="loginBox">
+  <h2>Admin Login</h2>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Entrar</button>
+</div>
 
-<input id="nome" placeholder="Nome">
-<input id="imagem" placeholder="URL da imagem">
-<textarea id="resumo" placeholder="Resumo"></textarea>
-<textarea id="historia" placeholder="História completa"></textarea>
+<!-- CMS -->
+<div id="cms" class="hidden">
 
-<button onclick="criar()">Criar peça</button>
+  <h1>Criar Nova Peça</h1>
+
+  <input id="nome" placeholder="Nome">
+  <input id="imagem" placeholder="URL da imagem">
+  <textarea id="resumo" placeholder="Resumo"></textarea>
+  <textarea id="historia" placeholder="História"></textarea>
+
+  <button onclick="criar()">Criar peça</button>
+  <br><br>
+  <button onclick="logout()">Logout</button>
+
+</div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AQUI_API_KEY",
+  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
   authDomain: "montra-site.firebaseapp.com",
   projectId: "montra-site"
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth();
 const db = getFirestore();
 
+/* 🔐 DEFINE O TEU EMAIL */
+const ADMIN_EMAIL = "the4750project@gmail.com";
+
+/* LOGIN */
+window.login = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .catch(e => alert(e.message));
+};
+
+/* LOGOUT */
+window.logout = () => signOut(auth);
+
+/* CONTROLO DE ACESSO */
+onAuthStateChanged(auth, user => {
+
+  if (!user) {
+    loginBox.style.display = "block";
+    cms.style.display = "none";
+    return;
+  }
+
+  if (user.email !== ADMIN_EMAIL) {
+    alert("Acesso negado.");
+    signOut(auth);
+    return;
+  }
+
+  loginBox.style.display = "none";
+  cms.style.display = "block";
+
+});
+
+/* CRIAR PEÇA */
 window.criar = async () => {
 
   await addDoc(collection(db, "pecas"), {
@@ -65,6 +118,10 @@ window.criar = async () => {
 
   alert("Peça criada!");
 
+  nome.value = "";
+  imagem.value = "";
+  resumo.value = "";
+  historia.value = "";
 };
 
 </script>
