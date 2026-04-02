@@ -1,47 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-<meta charset="UTF-8">
-<title>Admin B1M</title>
-
-<style>
-body {
-  font-family: Arial;
-  background: #0f0f0f;
-  color: white;
-  padding: 40px;
-}
-
-h1 {
-  margin-bottom: 30px;
-}
-
-.encomenda {
-  background: #1a1a1a;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-}
-
-.item {
-  color: #aaa;
-}
-
-.total {
-  margin-top: 10px;
-  font-weight: bold;
-  color: gold;
-}
-</style>
-</head>
-
-<body>
-
-<h1>📦 Encomendas B1M</h1>
-
-<div id="lista"></div>
-
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -59,32 +15,27 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function carregar() {
-  const querySnapshot = await getDocs(collection(db, "encomendas"));
-  const lista = document.getElementById("lista");
+  try {
+    const snapshot = await getDocs(collection(db, "encomendas"));
+    console.log("Docs:", snapshot.size);
 
-  querySnapshot.forEach(doc => {
-    const data = doc.data();
+    const lista = document.getElementById("lista");
 
-    let html = `
-      <div class="encomenda">
-        <p><strong>Cliente:</strong> ${data.user}</p>
-    `;
+    snapshot.forEach(doc => {
+      const data = doc.data();
 
-    data.cart.forEach(item => {
-      html += `<div class="item">${item.nome} - ${item.preco}€</div>`;
+      lista.innerHTML += `
+        <div style="background:#1a1a1a;padding:20px;margin:20px;border-radius:10px;">
+          <p><strong>${data.user}</strong></p>
+          <p>Total: ${data.total}€</p>
+        </div>
+      `;
     });
 
-    html += `
-        <div class="total">Total: ${data.total}€</div>
-      </div>
-    `;
-
-    lista.innerHTML += html;
-  });
+  } catch (e) {
+    alert("Erro: " + e.message);
+  }
 }
 
 carregar();
 </script>
-
-</body>
-</html>
