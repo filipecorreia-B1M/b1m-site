@@ -8,60 +8,84 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: #0a0a0a;
+  background: #0b0b0b;
   color: white;
 }
 
-/* NAVBAR */
+/* NAV */
 .nav {
   display: flex;
   justify-content: space-between;
-  padding: 20px 40px;
+  align-items: center;
+  padding: 20px 60px;
   border-bottom: 1px solid #222;
 }
 
 .logo {
+  font-size: 20px;
+  letter-spacing: 3px;
   color: gold;
-  font-weight: bold;
 }
 
+/* AUTH */
 .auth input {
-  padding: 5px;
+  padding: 6px;
   margin: 0 5px;
 }
 
 button {
   background: gold;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 15px;
   cursor: pointer;
   font-weight: bold;
 }
 
 /* HERO */
 .hero {
-  text-align: center;
-  padding: 60px 20px;
+  padding: 100px 60px;
+  max-width: 1200px;
 }
 
-/* PRODUTOS */
-.produtos {
-  display: flex;
-  justify-content: center;
+.hero h1 {
+  font-size: 48px;
+}
+
+.hero p {
+  color: #aaa;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 40px;
-  padding: 40px;
+  padding: 60px;
 }
 
 .card {
-  background: #1a1a1a;
-  padding: 20px;
+  background: #111;
   border-radius: 10px;
-  width: 250px;
+  overflow: hidden;
 }
 
 .card img {
   width: 100%;
-  border-radius: 10px;
+  height: 400px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.desc {
+  color: #888;
+}
+
+.price {
+  margin: 10px 0;
+  font-weight: bold;
 }
 
 /* CARRINHO */
@@ -80,7 +104,6 @@ button {
 </head>
 <body>
 
-<!-- NAV -->
 <div class="nav">
   <div class="logo">B1M</div>
 
@@ -93,33 +116,39 @@ button {
 
   <div id="userArea" style="display:none;">
     <span id="userEmail"></span>
-    <button onclick="logout()">Logout</button>
+    <button onclick="logout()">Sair</button>
   </div>
 </div>
 
-<!-- HERO -->
 <div class="hero">
-  <h1>B1M WATCHES</h1>
+  <h1>Relógios que definem presença.</h1>
+  <p>Design minimalista. Construção premium.</p>
 </div>
 
-<!-- PRODUTOS -->
-<div class="produtos">
+<div class="grid">
+
   <div class="card">
     <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30">
-    <h3>Phantom Black</h3>
-    <p>99€</p>
-    <button onclick="addCarrinho('Phantom Black',99)">Adicionar</button>
+    <div class="card-content">
+      <h3>Phantom Black</h3>
+      <p class="desc">Minimalismo. Elegância absoluta.</p>
+      <p class="price">99€</p>
+      <button onclick="addCarrinho('Phantom Black',99)">Adicionar</button>
+    </div>
   </div>
 
   <div class="card">
     <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
-    <h3>Silver Steel</h3>
-    <p>129€</p>
-    <button onclick="addCarrinho('Silver Steel',129)">Adicionar</button>
+    <div class="card-content">
+      <h3>Silver Steel</h3>
+      <p class="desc">Clássico moderno.</p>
+      <p class="price">129€</p>
+      <button onclick="addCarrinho('Silver Steel',129)">Adicionar</button>
+    </div>
   </div>
+
 </div>
 
-<!-- CARRINHO -->
 <div class="carrinho">
   <h2>Carrinho</h2>
   <div id="listaCarrinho"></div>
@@ -148,50 +177,39 @@ const db = getFirestore(app);
 
 let carrinho = [];
 
-/* AUTH */
+/* LOGIN */
 window.login = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  await signInWithEmailAndPassword(auth, email, password);
+  await signInWithEmailAndPassword(auth, email.value, password.value);
 };
 
 window.register = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  await createUserWithEmailAndPassword(auth, email, password);
+  await createUserWithEmailAndPassword(auth, email.value, password.value);
 };
 
 window.logout = () => signOut(auth);
 
 onAuthStateChanged(auth, user => {
-  if (user) {
-    document.getElementById("authArea").style.display = "none";
-    document.getElementById("userArea").style.display = "block";
-    document.getElementById("userEmail").innerText = user.email;
-  } else {
-    document.getElementById("authArea").style.display = "block";
-    document.getElementById("userArea").style.display = "none";
-  }
+  authArea.style.display = user ? "none" : "block";
+  userArea.style.display = user ? "block" : "none";
+  userEmail.innerText = user ? user.email : "";
 });
 
 /* CARRINHO */
 window.addCarrinho = (nome, preco) => {
   carrinho.push({ nome, preco });
-  renderCarrinho();
+  render();
 };
 
-function renderCarrinho() {
-  const lista = document.getElementById("listaCarrinho");
-  lista.innerHTML = "";
-
+function render() {
   let total = 0;
+  listaCarrinho.innerHTML = "";
 
   carrinho.forEach(p => {
     total += p.preco;
-    lista.innerHTML += `<p>${p.nome} - ${p.preco}€</p>`;
+    listaCarrinho.innerHTML += `<p>${p.nome} - ${p.preco}€</p>`;
   });
 
-  document.getElementById("total").innerText = total;
+  totalEl.innerText = total;
 }
 
 /* CHECKOUT */
@@ -200,7 +218,7 @@ window.finalizarCompra = async () => {
 
   if (!user) return alert("Faz login!");
 
-  const total = carrinho.reduce((acc, p) => acc + p.preco, 0);
+  const total = carrinho.reduce((a,b)=>a+b.preco,0);
 
   await addDoc(collection(db, "encomendas"), {
     user: user.email,
@@ -213,7 +231,7 @@ window.finalizarCompra = async () => {
   alert("Compra feita!");
 
   carrinho = [];
-  renderCarrinho();
+  render();
 };
 
 </script>
