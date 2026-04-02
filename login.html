@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+
+<style>
+body {
+  background: black;
+  color: white;
+  font-family: Arial;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.box {
+  text-align: center;
+}
+
+input {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+}
+
+button {
+  padding: 10px;
+  background: white;
+  border: none;
+}
+</style>
+
+</head>
+<body>
+
+<div class="box">
+  <h2>Login</h2>
+
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="login()">Entrar</button>
+  <button onclick="register()">Criar conta</button>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
+  authDomain: "montra-site.firebaseapp.com",
+  projectId: "montra-site"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+
+window.login = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .then(() => alert("Entraste"))
+    .catch(e => alert(e.message));
+};
+
+window.register = () => {
+  createUserWithEmailAndPassword(auth, email.value, password.value)
+    .then(() => alert("Conta criada"))
+    .catch(e => alert(e.message));
+};
+
+</script>
+
+</body>
+</html>
