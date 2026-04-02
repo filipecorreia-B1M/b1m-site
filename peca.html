@@ -2,99 +2,48 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
-<title>B1M — Peça</title>
+<title>Peça</title>
 
 <style>
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Arial;
-  background: #000;
+  font-family: -apple-system;
+  background: black;
   color: white;
 }
 
-/* NAV */
-.nav {
-  padding: 25px 60px;
-}
-
-/* HERO */
 .hero img {
   width: 100%;
   height: 80vh;
   object-fit: cover;
 }
 
-/* CONTEÚDO */
 .container {
   max-width: 800px;
   margin: 80px auto;
-  padding: 0 20px;
-}
-
-h1 {
-  font-size: 42px;
-  margin-bottom: 30px;
-}
-
-.texto {
-  color: #aaa;
-  line-height: 1.8;
-  margin-bottom: 40px;
 }
 
 button {
   background: white;
   color: black;
+  padding: 12px;
   border: none;
-  padding: 14px 20px;
-  cursor: pointer;
-  font-size: 14px;
 }
 </style>
 
 </head>
-
 <body>
 
-<div class="nav">
-  <a href="index.html" style="color:white;text-decoration:none;">B1M</a>
-</div>
-
-<!-- HERO -->
 <div class="hero">
-  <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30">
+  <img id="img">
 </div>
 
-<!-- CONTEÚDO -->
 <div class="container">
-
-  <h1>Phantom Black</h1>
-
-  <div class="texto">
-    Ele nunca quis provar nada a ninguém.  
-    Já tinha vivido o suficiente para perceber que validação externa  
-    é apenas ruído.
-    <br><br>
-    Durante anos tentou encaixar-se — em ambientes, em expectativas,  
-    em versões de si que nunca foram realmente suas.
-    <br><br>
-    Até ao momento em que deixou de ajustar.
-    <br><br>
-    Não houve anúncio.  
-    Não houve ruptura visível.  
-    Apenas uma decisão silenciosa:
-    <br><br>
-    parar.
-    <br><br>
-    Este relógio não marca esse momento.  
-    Ele existe porque esse momento aconteceu.
-  </div>
-
+  <h1 id="nome"></h1>
+  <p id="historia"></p>
   <button onclick="pedir()">Solicitar peça</button>
-
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -102,35 +51,53 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "COLOCA_AQUI_A_TUA_API_KEY",
+  apiKey: "AQUI_API_KEY",
   authDomain: "montra-site.firebaseapp.com",
-  projectId: "montra-site",
-  storageBucket: "montra-site.appspot.com",
-  messagingSenderId: "816599981389",
-  appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
+  projectId: "montra-site"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
+const pecas = {
+  phantom: {
+    nome: "Phantom Black",
+    imagem: "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
+    historia: "Ele deixou de ajustar-se ao mundo."
+  },
+  silver: {
+    nome: "Silver Steel",
+    imagem: "https://images.unsplash.com/photo-1524592094714-0f0654e20314",
+    historia: "O controlo não nasce. Aprende-se."
+  }
+};
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+const p = pecas[id];
+
+document.getElementById("img").src = p.imagem;
+document.getElementById("nome").innerText = p.nome;
+document.getElementById("historia").innerText = p.historia;
+
 window.pedir = async () => {
 
   const user = auth.currentUser;
 
   if (!user) {
-    alert("Faz login no site principal primeiro.");
+    alert("Faz login primeiro");
     return;
   }
 
   await addDoc(collection(db, "pedidos"), {
     user: user.email,
-    peça: "Phantom Black",
-    estado: "pedido",
+    peça: p.nome,
     data: new Date()
   });
 
-  alert("Pedido registado.");
+  alert("Pedido enviado.");
 };
 
 </script>
