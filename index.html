@@ -2,132 +2,187 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
-<title>B1M</title>
+<title>CMS B1M</title>
 
 <style>
 body {
-  margin: 0;
+  background: #000;
+  color: #fff;
   font-family: -apple-system;
-  background: black;
+  padding: 40px;
+  max-width: 800px;
+  margin: auto;
+}
+
+h1 {
+  font-size: 32px;
+  margin-bottom: 30px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  background: #111;
+  border: 1px solid #222;
   color: white;
 }
 
-.nav {
-  padding: 30px;
-}
-
-.grid {
-  padding: 60px;
-}
-
-.card {
-  margin-bottom: 80px;
-}
-
-.card img {
-  width: 100%;
-  height: 400px;
-  object-fit: cover;
-}
-
 button {
-  background: white;
-  color: black;
-  padding: 10px;
+  width: 100%;
+  padding: 14px;
+  background: #fff;
+  color: #000;
   border: none;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.preview img {
+  width: 100px;
+  margin: 5px;
+}
+
+.peca {
+  border: 1px solid #222;
+  padding: 15px;
+  margin-top: 20px;
 }
 </style>
-
 </head>
+
 <body>
 
-<div class="logo" onclick="goLogin()" style="cursor:pointer;">
-  B1M
-</div>
+<h1>CMS B1M</h1>
 
-<div class="grid" id="grid"></div>
+<input id="nome" placeholder="Nome">
+<textarea id="desc" placeholder="História"></textarea>
+<input type="file" id="files" multiple>
 
-<script>
+<div class="preview" id="preview"></div>
 
-const pecas = [
-  {
-    id: "phantom",
-    nome: "Phantom Black",
-    imagem: "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
-    resumo: "Silêncio como escolha."
-  },
-  {
-    id: "silver",
-    nome: "Silver Steel",
-    imagem: "https://images.unsplash.com/photo-1524592094714-0f0654e20314",
-    resumo: "Controlo aprendido."
-  }
-];
+<button onclick="criar()">Criar peça</button>
 
-const grid = document.getElementById("grid");
+<h2>Peças</h2>
+<div id="lista"></div>
 
-pecas.forEach(p => {
-  grid.innerHTML += `
-    <div class="card">
-      <img src="${p.imagem}">
-      <h2>${p.nome}</h2>
-      <p>${p.resumo}</p>
-      <button onclick="abrir('${p.id}')">Ver peça</button>
-    </div>
-  `;
-});
-
-function abrir(id) {
-  window.location.href = "peca.html?id=" + id;
-}
-
-function goLogin() {
-  window.location.href = "login.html";
-}
-  
-</script>
-
-</body>
-</html>
-
-
-</div>
-
-<!-- FIREBASE -->
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, doc, setDoc, getDocs, deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
   authDomain: "montra-site.firebaseapp.com",
-  projectId: "montra-site"
+  projectId: "montra-site",
+  storageBucket: "montra-site.appspot.com",
+  messagingSenderId: "816599981389",
+  appId: "1:816599981389:web:abc123"
 };
+
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore();
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-const grid = document.getElementById("grid");
+let imagens = [];
+let aCriar = false;
 
-const snap = await getDocs(collection(db, "pecas"));
+// PREVIEW IMAGENS
+document.getElementById("files").addEventListener("change", (e) => {
+  imagens = [...e.target.files];
 
-snap.forEach(doc => {
-  const p = doc.data();
+  const preview = document.getElementById("preview");
+  preview.innerHTML = "";
 
-  grid.innerHTML += `
-    <div class="card">
-      <img src="${p.imagem}">
-      <h2>${p.nome}</h2>
-      <p>${p.resumo}</p>
-      <button onclick="abrir('${doc.id}')">Ver peça</button>
-    </div>
-  `;
+  imagens.forEach(file => {
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    preview.appendChild(img);
+  });
 });
 
-window.abrir = (id) => {
-  window.location.href = "peca.html?id=" + id;
+// CRIAR PEÇA
+window.criar = async function () {
+
+  if (aCriar) return;
+  aCriar = true;
+
+  const nome = document.getElementById("nome").value.trim();
+  const desc = document.getElementById("desc").value.trim();
+
+  if (!nome) {
+    alert("Nome obrigatório");
+    aCriar = false;
+    return;
+  }
+
+  const id = nome.toLowerCase().replace(/\s+/g, "-");
+
+  let urls = [];
+
+  for (const file of imagens) {
+    const storageRef = ref(storage, "pecas/" + Date.now() + file.name);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    urls.push(url);
+  }
+
+  await setDoc(doc(db, "pecas", id), {
+    nome,
+    desc,
+    imagens: urls,
+    createdAt: new Date()
+  });
+
+  alert("Peça criada");
+
+  document.getElementById("nome").value = "";
+  document.getElementById("desc").value = "";
+  document.getElementById("preview").innerHTML = "";
+
+  carregar();
+
+  aCriar = false;
 };
+
+// LISTAR PEÇAS
+async function carregar() {
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "pecas"));
+
+  querySnapshot.forEach(docSnap => {
+    const p = docSnap.data();
+
+    const div = document.createElement("div");
+    div.className = "peca";
+
+    div.innerHTML = `
+      <strong>${p.nome}</strong><br>
+      <button onclick="apagar('${docSnap.id}')">Apagar</button>
+    `;
+
+    lista.appendChild(div);
+  });
+}
+
+// APAGAR
+window.apagar = async function(id) {
+  if (!confirm("Apagar peça?")) return;
+
+  await deleteDoc(doc(db, "pecas", id));
+  carregar();
+};
+
+carregar();
 
 </script>
 
