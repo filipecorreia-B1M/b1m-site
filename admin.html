@@ -6,27 +6,53 @@
 
 <style>
 body {
-  background: black;
+  background: #000;
   color: white;
-  font-family: Arial;
+  font-family: -apple-system, Arial;
   padding: 40px;
 }
 
-.hidden {
-  display: none;
+/* LOGIN */
+#loginBox {
+  max-width: 300px;
+  margin: auto;
+}
+
+/* CMS */
+#cms {
+  max-width: 600px;
+  margin: auto;
 }
 
 input, textarea {
   width: 100%;
   margin: 10px 0;
-  padding: 10px;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #333;
+  color: white;
 }
 
 button {
   background: white;
   color: black;
-  padding: 10px;
+  padding: 12px;
   border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.preview {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.preview img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
 }
 </style>
 
@@ -35,21 +61,25 @@ button {
 
 <!-- LOGIN -->
 <div id="loginBox">
-  <h2>Admin Login</h2>
+  <h2>Admin</h2>
   <input id="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">Entrar</button>
 </div>
 
 <!-- CMS -->
-<div id="cms" class="hidden">
+<div id="cms" style="display:none;">
 
-  <h1>Criar Nova Peça</h1>
+  <h1>Nova Peça</h1>
 
-  <input id="nome" placeholder="Nome">
-  <input id="imagem" placeholder="URL da imagem">
-  <textarea id="resumo" placeholder="Resumo"></textarea>
-  <textarea id="historia" placeholder="História"></textarea>
+  <input id="nome" placeholder="Nome da peça">
+
+  <input type="file" id="files" multiple>
+
+  <div class="preview" id="preview"></div>
+
+  <textarea id="resumo" placeholder="Resumo curto"></textarea>
+  <textarea id="historia" placeholder="História completa"></textarea>
 
   <button onclick="criar()">Criar peça</button>
   <br><br>
@@ -62,19 +92,26 @@ button {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
+/* 🔧 CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
+  apiKey: "AQUI_METES_A_TUA_API_KEY",
   authDomain: "montra-site.firebaseapp.com",
-  projectId: "montra-site"
+  projectId: "montra-site",
+  storageBucket: "montra-site.appspot.com",
+  messagingSenderId: "816599981389",
+  appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
 };
 
+/* 🔐 ADMIN EMAIL */
+const ADMIN_EMAIL = "COLOCA_AQUI_O_TEU_EMAIL";
+
+/* INIT */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
-
-/* 🔐 DEFINE O TEU EMAIL */
-const ADMIN_EMAIL = "the4750project@gmail.com";
+const storage = getStorage();
 
 /* LOGIN */
 window.login = () => {
@@ -85,7 +122,7 @@ window.login = () => {
 /* LOGOUT */
 window.logout = () => signOut(auth);
 
-/* CONTROLO DE ACESSO */
+/* PROTEÇÃO */
 onAuthStateChanged(auth, user => {
 
   if (!user) {
@@ -95,33 +132,71 @@ onAuthStateChanged(auth, user => {
   }
 
   if (user.email !== ADMIN_EMAIL) {
-    alert("Acesso negado.");
+    alert("Acesso negado");
     signOut(auth);
     return;
   }
 
   loginBox.style.display = "none";
   cms.style.display = "block";
+});
+
+/* PREVIEW IMAGENS */
+files.addEventListener("change", () => {
+
+  preview.innerHTML = "";
+
+  Array.from(files.files).forEach(file => {
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      preview.innerHTML += `<img src="${e.target.result}">`;
+    };
+
+    reader.readAsDataURL(file);
+  });
 
 });
 
 /* CRIAR PEÇA */
 window.criar = async () => {
 
+  const selectedFiles = files.files;
+
+  if (selectedFiles.length === 0) {
+    alert("Escolhe imagens");
+    return;
+  }
+
+  let urls = [];
+
+  for (let i = 0; i < selectedFiles.length; i++) {
+
+    const storageRef = ref(storage, "pecas/" + Date.now() + "_" + i);
+
+    await uploadBytes(storageRef, selectedFiles[i]);
+
+    const url = await getDownloadURL(storageRef);
+
+    urls.push(url);
+  }
+
   await addDoc(collection(db, "pecas"), {
     nome: nome.value,
-    imagem: imagem.value,
+    imagens: urls,
     resumo: resumo.value,
     historia: historia.value,
     data: new Date()
   });
 
-  alert("Peça criada!");
+  alert("Peça criada com sucesso 🔥");
 
   nome.value = "";
-  imagem.value = "";
   resumo.value = "";
   historia.value = "";
+  files.value = "";
+  preview.innerHTML = "";
+
 };
 
 </script>
