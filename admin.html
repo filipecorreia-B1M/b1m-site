@@ -1,4 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Admin B1M</title>
+
+<style>
+body {
+  background: #0a0a0a;
+  color: white;
+  font-family: Arial;
+  padding: 40px;
+}
+
+h1 {
+  color: gold;
+}
+
+.card {
+  background: #1a1a1a;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>📦 Encomendas B1M</h1>
+
+<!-- 🔥 ESTE É O ELEMENTO QUE FALTAVA -->
+<div id="lista"></div>
+
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -15,19 +50,23 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 async function carregar() {
+  const lista = document.getElementById("lista");
+
   try {
     const snapshot = await getDocs(collection(db, "encomendas"));
-    console.log("Docs:", snapshot.size);
 
-    const lista = document.getElementById("lista");
+    if (snapshot.empty) {
+      lista.innerHTML = "<p>Sem encomendas ainda...</p>";
+      return;
+    }
 
     snapshot.forEach(doc => {
       const data = doc.data();
 
       lista.innerHTML += `
-        <div style="background:#1a1a1a;padding:20px;margin:20px;border-radius:10px;">
-          <p><strong>${data.user}</strong></p>
-          <p>Total: ${data.total}€</p>
+        <div class="card">
+          <p><strong>Cliente:</strong> ${data.user}</p>
+          <p><strong>Total:</strong> ${data.total}€</p>
         </div>
       `;
     });
@@ -38,4 +77,8 @@ async function carregar() {
 }
 
 carregar();
+
 </script>
+
+</body>
+</html>
