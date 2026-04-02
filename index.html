@@ -7,8 +7,8 @@
 <style>
 body {
   margin: 0;
-  font-family: Arial;
-  background: #0b0b0b;
+  font-family: -apple-system, BlinkMacSystemFont, Arial;
+  background: #000;
   color: white;
 }
 
@@ -16,98 +16,93 @@ body {
 .nav {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 20px 60px;
-  border-bottom: 1px solid #222;
+  align-items: center;
 }
 
 .logo {
-  font-size: 20px;
-  letter-spacing: 3px;
-  color: gold;
+  font-weight: 600;
+  letter-spacing: 2px;
 }
 
-/* AUTH */
-.auth input {
+/* LOGIN */
+.auth {
+  display: flex;
+  gap: 10px;
+}
+
+input {
   padding: 6px;
-  margin: 0 5px;
+  border: none;
 }
 
+/* BOTÕES */
 button {
-  background: gold;
+  background: white;
+  color: black;
   border: none;
-  padding: 8px 15px;
+  padding: 8px 14px;
   cursor: pointer;
-  font-weight: bold;
 }
 
 /* HERO */
 .hero {
-  padding: 100px 60px;
-  max-width: 1200px;
+  text-align: center;
+  padding: 120px 20px;
 }
 
 .hero h1 {
-  font-size: 48px;
+  font-size: 56px;
 }
 
-.hero p {
-  color: #aaa;
-}
-
-/* GRID */
+/* PRODUTOS */
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  gap: 60px;
   padding: 60px;
 }
 
 .card {
-  background: #111;
-  border-radius: 10px;
-  overflow: hidden;
+  text-align: center;
 }
 
 .card img {
   width: 100%;
-  height: 400px;
+  max-height: 500px;
   object-fit: cover;
 }
 
-.card-content {
-  padding: 20px;
-}
-
-.desc {
-  color: #888;
-}
-
 .price {
-  margin: 10px 0;
-  font-weight: bold;
+  margin: 10px;
 }
 
 /* CARRINHO */
-.carrinho {
+.cart {
   position: fixed;
-  right: 0;
+  right: -350px;
   top: 0;
   width: 300px;
   height: 100%;
   background: #111;
   padding: 20px;
-  border-left: 1px solid #333;
+  transition: 0.3s;
+}
+
+.cart.active {
+  right: 0;
 }
 </style>
 
 </head>
 <body>
 
+<!-- NAV -->
 <div class="nav">
+
   <div class="logo">B1M</div>
 
-  <div id="authArea" class="auth">
+  <div class="auth" id="authArea">
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
     <button onclick="login()">Entrar</button>
@@ -117,45 +112,45 @@ button {
   <div id="userArea" style="display:none;">
     <span id="userEmail"></span>
     <button onclick="logout()">Sair</button>
+    <button onclick="toggleCart()">Carrinho</button>
   </div>
+
 </div>
 
+<!-- HERO -->
 <div class="hero">
   <h1>Relógios que definem presença.</h1>
-  <p>Design minimalista. Construção premium.</p>
+  <p>Minimalismo. Precisão.</p>
 </div>
 
+<!-- PRODUTOS -->
 <div class="grid">
 
   <div class="card">
     <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30">
-    <div class="card-content">
-      <h3>Phantom Black</h3>
-      <p class="desc">Minimalismo. Elegância absoluta.</p>
-      <p class="price">99€</p>
-      <button onclick="addCarrinho('Phantom Black',99)">Adicionar</button>
-    </div>
+    <h3>Phantom Black</h3>
+    <p class="price">99€</p>
+    <button onclick="addCarrinho('Phantom Black',99)">Adicionar</button>
   </div>
 
   <div class="card">
     <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
-    <div class="card-content">
-      <h3>Silver Steel</h3>
-      <p class="desc">Clássico moderno.</p>
-      <p class="price">129€</p>
-      <button onclick="addCarrinho('Silver Steel',129)">Adicionar</button>
-    </div>
+    <h3>Silver Steel</h3>
+    <p class="price">129€</p>
+    <button onclick="addCarrinho('Silver Steel',129)">Adicionar</button>
   </div>
 
 </div>
 
-<div class="carrinho">
+<!-- CARRINHO -->
+<div id="cart" class="cart">
   <h2>Carrinho</h2>
-  <div id="listaCarrinho"></div>
+  <div id="lista"></div>
   <p>Total: <span id="total">0</span>€</p>
-  <button onclick="finalizarCompra()">Finalizar</button>
+  <button onclick="finalizar()">Finalizar</button>
 </div>
 
+<!-- FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -166,73 +161,94 @@ const firebaseConfig = {
   apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
   authDomain: "montra-site.firebaseapp.com",
   projectId: "montra-site",
-  storageBucket: "montra-site.firebasestorage.app",
+  storageBucket: "montra-site.appspot.com",
   messagingSenderId: "816599981389",
   appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-let carrinho = [];
+const auth = getAuth();
+const db = getFirestore();
 
 /* LOGIN */
-window.login = async () => {
-  await signInWithEmailAndPassword(auth, email.value, password.value);
-};
+window.login = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .then(() => alert("Login feito"))
+    .catch(e => alert(e.message));
+}
 
-window.register = async () => {
-  await createUserWithEmailAndPassword(auth, email.value, password.value);
-};
+/* REGISTO */
+window.register = () => {
+  createUserWithEmailAndPassword(auth, email.value, password.value)
+    .then(() => alert("Conta criada"))
+    .catch(e => alert(e.message));
+}
 
+/* LOGOUT */
 window.logout = () => signOut(auth);
 
+/* ESTADO LOGIN */
 onAuthStateChanged(auth, user => {
-  authArea.style.display = user ? "none" : "block";
-  userArea.style.display = user ? "block" : "none";
-  userEmail.innerText = user ? user.email : "";
+
+  if (user) {
+    authArea.style.display = "none";
+    userArea.style.display = "flex";
+    userEmail.innerText = user.email;
+    email.value = "";
+    password.value = "";
+  } else {
+    authArea.style.display = "flex";
+    userArea.style.display = "none";
+  }
+
 });
 
 /* CARRINHO */
+let carrinho = [];
+
 window.addCarrinho = (nome, preco) => {
   carrinho.push({ nome, preco });
   render();
-};
+}
 
 function render() {
+  lista.innerHTML = "";
   let total = 0;
-  listaCarrinho.innerHTML = "";
 
   carrinho.forEach(p => {
     total += p.preco;
-    listaCarrinho.innerHTML += `<p>${p.nome} - ${p.preco}€</p>`;
+    lista.innerHTML += `<p>${p.nome} - ${p.preco}€</p>`;
   });
 
   totalEl.innerText = total;
 }
 
-/* CHECKOUT */
-window.finalizarCompra = async () => {
+const totalEl = document.getElementById("total");
+
+/* MOSTRAR CARRINHO */
+window.toggleCart = () => {
+  cart.classList.toggle("active");
+}
+
+/* FINALIZAR */
+window.finalizar = async () => {
+
   const user = auth.currentUser;
 
-  if (!user) return alert("Faz login!");
+  if (!user) return alert("Faz login primeiro");
 
-  const total = carrinho.reduce((a,b)=>a+b.preco,0);
+  let total = carrinho.reduce((t,p)=>t+p.preco,0);
 
   await addDoc(collection(db, "encomendas"), {
     user: user.email,
-    produtos: carrinho,
     total: total,
-    estado: "pendente",
-    data: new Date()
+    items: carrinho
   });
 
-  alert("Compra feita!");
-
+  alert("Compra guardada!");
   carrinho = [];
   render();
-};
+}
 
 </script>
 
