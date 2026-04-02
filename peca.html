@@ -47,49 +47,35 @@ button {
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AQUI_API_KEY",
+  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
   authDomain: "montra-site.firebaseapp.com",
   projectId: "montra-site"
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
 const db = getFirestore();
+const auth = getAuth();
 
-const pecas = {
-  phantom: {
-    nome: "Phantom Black",
-    imagem: "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
-    historia: "Ele deixou de ajustar-se ao mundo."
-  },
-  silver: {
-    nome: "Silver Steel",
-    imagem: "https://images.unsplash.com/photo-1524592094714-0f0654e20314",
-    historia: "O controlo não nasce. Aprende-se."
-  }
-};
+const id = new URLSearchParams(window.location.search).get("id");
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const docRef = doc(db, "pecas", id);
+const snap = await getDoc(docRef);
 
-const p = pecas[id];
+const p = snap.data();
 
-document.getElementById("img").src = p.imagem;
-document.getElementById("nome").innerText = p.nome;
-document.getElementById("historia").innerText = p.historia;
+img.src = p.imagem;
+nome.innerText = p.nome;
+historia.innerText = p.historia;
 
 window.pedir = async () => {
 
   const user = auth.currentUser;
 
-  if (!user) {
-    alert("Faz login primeiro");
-    return;
-  }
+  if (!user) return alert("Faz login");
 
   await addDoc(collection(db, "pedidos"), {
     user: user.email,
@@ -97,10 +83,11 @@ window.pedir = async () => {
     data: new Date()
   });
 
-  alert("Pedido enviado.");
+  alert("Pedido enviado");
 };
 
 </script>
 
+  
 </body>
 </html>
