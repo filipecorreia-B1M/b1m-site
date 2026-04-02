@@ -91,62 +91,36 @@ function abrir(id) {
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC60rlpyK6bu0mkzysQItDU3TDKUCtTfic",
+  apiKey: "AQUI_API_KEY",
   authDomain: "montra-site.firebaseapp.com",
-  projectId: "montra-site",
-  storageBucket: "montra-site.appspot.com",
-  messagingSenderId: "816599981389",
-  appId: "1:816599981389:web:b3210dbe4517be9dc5eb04"
+  projectId: "montra-site"
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
 const db = getFirestore();
 
-/* LOGIN */
-window.login = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .catch(e => alert(e.message));
-};
+const grid = document.getElementById("grid");
 
-window.logout = () => signOut(auth);
+const snap = await getDocs(collection(db, "pecas"));
 
-/* ESTADO */
-onAuthStateChanged(auth, user => {
+snap.forEach(doc => {
+  const p = doc.data();
 
-  if (user) {
-    authArea.style.display = "none";
-    userArea.style.display = "block";
-    userEmail.innerText = user.email;
-  } else {
-    authArea.style.display = "flex";
-    userArea.style.display = "none";
-  }
-
+  grid.innerHTML += `
+    <div class="card">
+      <img src="${p.imagem}">
+      <h2>${p.nome}</h2>
+      <p>${p.resumo}</p>
+      <button onclick="abrir('${doc.id}')">Ver peça</button>
+    </div>
+  `;
 });
 
-/* PEDIDO (ISTO SUBSTITUI O CARRINHO) */
-window.pedir = async (nome) => {
-
-  const user = auth.currentUser;
-
-  if (!user) {
-    alert("Faz login primeiro.");
-    return;
-  }
-
-  await addDoc(collection(db, "pedidos"), {
-    user: user.email,
-    peça: nome,
-    estado: "pedido",
-    data: new Date()
-  });
-
-  alert("Pedido registado. Vamos entrar em contacto.");
+window.abrir = (id) => {
+  window.location.href = "peca.html?id=" + id;
 };
 
 </script>
