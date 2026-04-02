@@ -2,156 +2,88 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
-<title>B1M — Custom Watches</title>
+<title>B1M</title>
 
 <style>
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Arial;
-  background: #000;
+  font-family: -apple-system;
+  background: black;
   color: white;
 }
 
-/* NAV */
 .nav {
-  display: flex;
-  justify-content: space-between;
-  padding: 25px 60px;
+  padding: 30px;
 }
 
-.logo {
-  letter-spacing: 4px;
-}
-
-/* HERO */
-.hero {
-  padding: 140px 60px 80px;
-  max-width: 900px;
-}
-
-.hero h1 {
-  font-size: 52px;
-  font-weight: 500;
-}
-
-.hero p {
-  color: #888;
-  margin-top: 20px;
-  line-height: 1.6;
-}
-
-/* GRID */
 .grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 100px;
   padding: 60px;
 }
 
-.peça {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: center;
+.card {
+  margin-bottom: 80px;
 }
 
-.peça img {
+.card img {
   width: 100%;
-  height: 500px;
+  height: 400px;
   object-fit: cover;
-}
-
-.texto h2 {
-  font-size: 28px;
-}
-
-.texto p {
-  color: #aaa;
-  margin: 20px 0;
-  line-height: 1.6;
 }
 
 button {
   background: white;
   color: black;
+  padding: 10px;
   border: none;
-  padding: 12px 18px;
-  cursor: pointer;
-}
-
-/* LOGIN */
-.auth {
-  display: flex;
-  gap: 10px;
-}
-
-input {
-  padding: 6px;
 }
 </style>
 
 </head>
-
 <body>
 
-<!-- NAV -->
-<div class="nav">
+<div class="nav">B1M</div>
 
-  <div class="logo">B1M</div>
+<div class="grid" id="grid"></div>
 
-  <div id="authArea" class="auth">
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Entrar</button>
-  </div>
+<script>
 
-  <div id="userArea" style="display:none;">
-    <span id="userEmail"></span>
-    <button onclick="logout()">Sair</button>
-  </div>
+const pecas = [
+  {
+    id: "phantom",
+    nome: "Phantom Black",
+    imagem: "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
+    resumo: "Silêncio como escolha."
+  },
+  {
+    id: "silver",
+    nome: "Silver Steel",
+    imagem: "https://images.unsplash.com/photo-1524592094714-0f0654e20314",
+    resumo: "Controlo aprendido."
+  }
+];
 
-</div>
+const grid = document.getElementById("grid");
 
-<!-- HERO -->
-<div class="hero">
-  <h1>Peças que só existem porque alguém precisava delas.</h1>
-  <p>
-    Cada relógio nasce de uma história real.  
-    Não de um conceito. Não de uma tendência.  
-    Mas de uma decisão humana concreta.
-  </p>
-</div>
-
-<!-- PEÇAS -->
-<div class="grid">
-
-  <div class="peça">
-    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30">
-    <div class="texto">
-      <h2>Phantom Black</h2>
-      <p>
-        Ele não precisava de mostrar nada.  
-        Já tinha passado por demasiado para isso importar.  
-        Queria algo que não chamasse atenção —  
-        mas que estivesse à altura de quem se tornou.
-      </p>
-      <button onclick="window.location.href='peca.html'">
+pecas.forEach(p => {
+  grid.innerHTML += `
+    <div class="card">
+      <img src="${p.imagem}">
+      <h2>${p.nome}</h2>
+      <p>${p.resumo}</p>
+      <button onclick="abrir('${p.id}')">Ver peça</button>
     </div>
-  </div>
+  `;
+});
 
-  <div class="peça">
-    <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314">
-    <div class="texto">
-      <h2>Silver Steel</h2>
-      <p>
-        O equilíbrio nunca foi natural para ele.  
-        Foi aprendido. Construído.  
-        Este relógio não representa perfeição —  
-        representa controlo.
-      </p>
-      <button onclick="pedir('Silver Steel')">Solicitar peça</button>
-    </div>
-  </div>
+function abrir(id) {
+  window.location.href = "peca.html?id=" + id;
+}
+
+</script>
+
+</body>
+</html>
+
 
 </div>
 
